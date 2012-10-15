@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Media Center</title>
+    <meta name="author" content="Azraellong" />
+    <script type="text/javascript">
+    document.domain = "qplus.com";
+    TIME_STAMP = '%TimeStamp%';
+    PUBLIC_VERSION = '%DateVer%';
+    PUBLIC_VERSION = parseFloat(PUBLIC_VERSION) ? PUBLIC_VERSION : '0';
+    PAGE_START = +new Date;
+    </script>
+    <link rel="stylesheet" type="text/css" href="http://qplus1.idqqimg.com/module/mediacenter/style/scrollstyle_black.css?%TimeStamp%">
+    <link rel="stylesheet" type="text/css" href="http://qplus1.idqqimg.com/module/mediacenter/style/common.css?%TimeStamp%">
+    <link rel="stylesheet" type="text/css" href="http://qplus1.idqqimg.com/module/mediacenter/style/index.css?%TimeStamp%">
+
+</head>
+<body>
+<div id="toolbar" class="toolbar">
+    <div class="toolbar-inner clearfix">
+        <ul id="menu" class="menu clearfix">
+            <li class="menu-item main" param="main" cmd="jump" cate="0">首页</li>
+            <li class="menu-item movie" param="movie" cmd="jump" cate="1">电影</li>
+            <li class="menu-item teleplay" param="teleplay" cmd="jump" cate="2">电视剧</li>
+            <li class="menu-item cartoon" param="cartoon" cmd="jump" cate="4">动漫</li>
+            <li class="menu-item variety" param="variety" cmd="jump" cate="3">综艺</li>
+            <li class="menu-item documentary" param="documentary" cmd="jump" cate="5">纪录片</li>
+            <!--<li class="menu-item entertainment" param="entertainment" cmd="jump" cate="6">娱乐</li>
+            <li class="menu-item news" param="news" cmd="jump" cate="7">新闻</li>-->
+            <li class="menu-item sport" param="sport" cmd="jump" cate="8">体育</li>
+        </ul>
+        <div id="searchbar" class="searchbar">
+            <div class="search-input">
+                <input id="search-input">
+                <div class="search-btn" id="search-btn"></div>
+            </div>
+        </div>
+        <div class="buttonbar">
+            <div id="history" cmd="switchHistory" class="button history" title="历史记录"></div>
+            <div id="message" cmd="switchMsg" class="button message" title="消息中心"><span></span></div>
+            <div id="historyBox" class="bubble historyBox hide empty">
+                <div class="triangle"></div>
+                <ul class="history-list">努力加载中...</ul>
+            </div>
+            <div id="messageBox" class="bubble messageBox hide empty">
+                <div class="triangle"></div>
+                <ul class="message-list">努力加载中...</ul>
+            </div>
+        </div>
+    </div>
+    <hr class="horizontal">
+</div>
+<iframe src="about:blank" id="contentFrame" name="contentFrame" frameborder="0" ></iframe>
+<div id="loading" class="loading-masker show">
+    <div class="auto-loading"></div>
+</div>
+<script id="searchSuggestTemplate" type="text/template">
+<ul>
+<% for(var i in data){ %>
+    <li class="guessItem" cmd="search" param="<%=data[i].appalias %>" appid="<%=data[i].appid%>"><%=data[i].appalias %></li>
+<% } %>
+</ul>
+</script>
+<script id="historyTemplate" type="text/template">
+<% if(data.length == 0){ %>
+    <spa>暂无播放历史记录</spa>
+<% return ;}%>
+<% for ( var i in data ) { var item = data[i]; %>
+    <li id="history-group-<%=i%>" count="<%=item.length%>" class="totalTime"><%=parseDate(item[0].create_time)%></li>
+    <%for(var j in item){ var info = item[j]; %>
+    <li id="history-<%=info.vid%>" group="<%=i%>" class="historyItem" cmd="play" param="<%=info.vid%>_<%=info.svid%>_<%=info.episode || ''%>_<%=info.provider%>">
+        <div class="line"></div>
+        <div class="closebtn" cmd="delHistory" param="<%=info.vid,'_',info.type,'_','_',info.svid%>"></div>
+        <%=info.name%>
+    </li>
+   <% }%>
+<% } %>
+</script>
+<script id="messageTemplate" type="text/template">
+<% var len=list.length;
+if(len){
+    for(var i=0;i<len;i++){
+        var info=list[i]; %>
+        <li id="msg-<%=info.vid%>" class="messageItem" cmd="play" param="<%=info.vid,'_',info.svid,'_',info.episode || '','_',info.provider%>">
+            <div class="line"></div>
+            <div class="closebtn" cmd="delMsg" param="<%=info.vid,'_',info.msg_type%>"></div>
+            <img src="<%=thumb(info.svid)%>" />
+            <span class="thumbMask"></span>
+            <p class="vname" title="<%=html(info.name)%>"><%=html(info.name)%></p>
+            <% var msgText='',msgTitle='';
+            switch(info.msg_type){
+                case 0:
+                case 1:
+                    if(info.type == 3){
+                        msgText = '更新至<span class="keyword">'+info.episode_current+'</span>期';
+                        msgTitle = '更新至'+info.episode_current+'期';
+                    }else{ /*(info.type == 2 || info.type == 4)*/
+                        msgText = '更新至<span class="keyword">'+info.episode_current+'</span>集';
+                        msgTitle = '更新至'+info.episode_current+'集';
+                    }
+                    if(info.episode_total && info.episode_current==info.episode_total){
+                        msgText += '全';
+                        msgTitle += '全';
+                    }
+                    break;
+                case 2:
+                    msgText = '<span class="keyword">'+html(info.fuins[0].name)+'</span>邀请您观看';
+                    msgTitle = html(info.fuins[0].name)+'邀请您观看';
+                    break;
+                case 3:
+                    msgText = msgTitle = '好友热播';
+                    break;
+                case 4:
+                    /*msg_type=4, 后台强推的*/
+                    msgText = msgTitle = '系统推荐';
+                    break;
+                default:
+                    break;
+            } %>
+            <p title="<%=msgTitle%>"><%=msgText%></p>
+        </li>
+    <% }
+}else{
+    print('暂无消息记录');
+} %>
+</script>
+<script id="videoCardTmpl" type="text/template">
+<div class="score"><span><%=numberFormat(parseFloat(info.score) || 6, '#.0')%></span>分</div>
+<div class="title text-ellipsis" title="<%=encodeAttr(info.name)%>"><%=encodeHTML(info.name)%></div>
+<div class="types text-ellipsis">类型：
+<% if(info.subType && info.subType.length){ %>
+    <% for(var i in info.subType){ %>
+    <span class="label"><%=encodeHTML(info.subType[i].txt || '')%></span>
+    <% } 
+}else{ %>
+暂无
+<% } %></div>
+<div class="actors text-ellipsis">主演：
+<% if(info.actors && info.actors.length){ %>
+    <% for(var i in info.actors){ %>
+    <span class="actor"><%=encodeHTML(info.actors[i] || '')%></span>
+    <% } 
+}else{ %>
+暂无
+<% } %></div>
+<div class="areas">地区：<% if(info.area && info.area.length){ %>
+    <% for(var i in info.area){ %>
+    <span class="area"><%=encodeHTML(info.area[i].txt || '')%></span>
+    <% } 
+}else{ %>
+暂无
+<% } %></div>
+<% if(info.provider && sources[info.provider]){ 
+    var merchant = sources[info.provider];
+    %>
+<div class="merchant <%=merchant.id%>">来源：
+<span class="icon" title="由<%=merchant.name%>提供"></span>
+</div>
+<% } %>
+<div class="year">年份：
+<%= (info.year && info.year != 9) ? (info.year + '年') : '其他' %>
+</div>
+<div class="description">
+<%=encodeHTML(info.summary || '')%>
+</div>
+</script>
+<script id="rankingListTmpl" type="text/template">
+<% 
+for(var i in list){ 
+    var info = list[i];
+    var trend = trendList[info.trend || 0];
+%>
+<li class="item" cmd="play" param="<%=info.vid%>_<%=info.svid%>__<%=info.provider%>" title="<%=encodeAttr(info.name)%>" report="<%=report%>_<%=info.vid%>">
+    <div class="trend trend-<%=trend[0]%>" ></div>
+    <div class="num <%=i > 2 ? 'other' : ''%>"><%=(i*1+1) %></div>
+    <span><%=encodeHTML(info.name)%></span>
+</li>
+<% } %>
+</script>
+<script src="http://cdn.qplus.com/js/qplus.api.js"></script>
+<script src="http://qplus1.idqqimg.com/module/mediacenter/js/jx.all.js?%TimeStamp%"></script>
+<script src="http://qplus1.idqqimg.com/module/mediacenter/js/common.all.js?%TimeStamp%"></script>
+<script src="http://qplus1.idqqimg.com/module/mediacenter/js/index.all.js?%TimeStamp%"></script>
+<script type="text/javascript">
+    PAGE_END = +new Date;
+</script>
+</body>
+</html>

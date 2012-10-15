@@ -1,0 +1,8 @@
+{
+	"offline": [
+		"index.html"
+	],
+	"cache": [
+		"main.html"
+	]
+}

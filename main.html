@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Media Center Main</title>
+    <meta name="author" content="Azraellong" />
+	<script type="text/javascript">
+	document.domain = "qplus.com";
+	TIME_STAMP = '%TimeStamp%';
+	PAGE_START = +new Date;
+	</script>
+    <link rel="stylesheet" type="text/css" href="http://qplus1.idqqimg.com/module/mediacenter/style/scrollstyle_black.css?%TimeStamp%">
+    <link rel="stylesheet" type="text/css" href="http://qplus1.idqqimg.com/module/mediacenter/style/common.css?%TimeStamp%">
+    <link rel="stylesheet" type="text/css" href="http://qplus1.idqqimg.com/module/mediacenter/style/main.css?%TimeStamp%">
+</head>
+<body>
+<div id="wrapper" class="wrapper">
+	<div id="banner" class="banner loading">
+		<div id="bannerListWrapper" class="banner-list-wrapper">
+			<div id="bannerLeftTrigger" class="slide-trigger slide-left-trigger" cmd="gotoPage" param="-1" name="banner" report="10347" ><div class="slide-trigger-icon"></div></div>
+			<div id="bannerRightTrigger" class="slide-trigger slide-right-trigger" cmd="gotoPage" param="1" name="banner" report="10347"><div class="slide-trigger-icon"></div></div>
+			<div id="bannerListInner" class="banner-list-inner">
+			</div>
+		</div>
+	</div>
+	<div id="content" class="content">
+		<div class="row clearfix">
+			<div class="column column-left">
+				<div id="videoTheatre" class="video-theatre loading">
+					<div class="titlebar">
+						<div class="slide-triggers">
+							<div id="theatreLeftTrigger" class="slide-trigger slide-left-trigger" cmd="gotoPage" param="-1" name="theatre" report="10351"></div>
+							<div id="theatreRightTrigger" class="slide-trigger slide-right-trigger" cmd="gotoPage" param="1" name="theatre" report="10351"></div>
+						</div>
+						<div class="title">独播剧场</div>
+					</div>
+					<div id="theatreListWrapper" class="video-list-wrapper theatre-list-wrapper">
+					</div>
+				</div>
+			</div>
+			<div class="column column-right">
+				<div class="random-video">
+					<div class="titlebar">
+						<div class="change" cmd="switchVideo"><span class="icon"></span>换一部</div>
+						<div class="title">随便看看</div>
+					</div>
+                    <div id="randomVideoBox" class="video-box" >
+                        <div class="random-item front" param="" action="toggleDetail" ></div>
+						<div class="random-item back" param="" action="toggleDetail" ></div>
+                    </div>
+                </div>
+			</div>
+		</div>
+		<div class="row clearfix">
+			<div class="column column-left">
+				<div id="videoCategoryList" class="video-category-list clearfix">
+				</div>
+			</div>
+			<div class="column column-right">
+				<div id="videoRanking" class="video-ranking">
+					<div class="titlebar">
+						<div class="title">综合排行榜</div>
+					</div>
+                    <ul class="top" id="topList">
+                    </ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<script id="bannerListTmpl" type="text/template">
+<ul id="bannerList" class="banner-list clearfix" style="width: <%=listWidth %>px;">
+	<% for(var i = 0, info; (info = list[i]) && i < total; i++) { %>
+	<li class="banner-item" cmd="play" param="<%=info.vid%>__<%=info.episode || ''%>_<%=info.provider%>" report="10348_<%=info.vid%>">
+		<div class="img-wrapper video-box-shadow" >
+			<img src="<%=info.img || poster(info.svid) %>" onerror="this.onerror=null;this.src='<%=defaultPoster%>'">
+		</div>
+		<div class="text-wrapper">
+			<div class="title text-ellipsis" title="<%=encodeAttr(info.name) %>"><%=encodeHTML(info.name) %></div>
+			<div class="text text-ellipsis" title="<%=encodeAttr(info.point || '') %>"><%=encodeHTML(info.point || '') %></div>
+		</div>
+		<div class="banner-item-mask"></div>
+		<div class="play-icon"></div>
+	</li>
+	<% } %>
+</ul>
+</script>
+<script id="theatreListTmpl" type="text/template">
+<ul id="theatreList" class="video-list theatre-list  clearfix" style="width: <%=listWidth %>px;">
+	<% for(var i = 0, info; info = list[i]; i++) { %>
+	<li class="video-item theatre-item" param="<%=info.vid%>__<%=info.episode || ''%>_<%=info.provider%>" action="toggleDetail" >
+		<div class="img-wrapper video-box-shadow" cmd="play" param="<%=info.vid%>__<%=info.episode || ''%>_<%=info.provider%>" report="10352_<%=info.vid%>">
+			<img src="<%=poster(info.svid) %>" onerror="this.onerror=null;this.src='<%=defaultPoster%>'">
+			<div class="theatre-item-source">
+				<div class="theatre-source theatre-source-<%=sources[info.provider] ? sources[info.provider].id : 'none' %>"></div>
+			</div>
+		</div>
+		<div class="video-item-mask"></div>
+		<div class="text-wrapper">
+			<div class="title text-ellipsis" cmd="play" param="<%=info.vid%>__<%=info.episode || ''%>_<%=info.provider%>" report="10352_<%=info.vid%>"><%=encodeHTML(info.name) %></div>
+			<div class="text text-ellipsis" title="<%=encodeAttr(info.point || '') %>" ><%=encodeHTML(info.point || '') %></div>
+		</div>
+	</li>
+	<% } %>
+</ul>
+</script>
+<script id="categoryListTmpl" type="text/template">
+<% for(var i = 0, cate; cate = list[i]; i++) { %>
+<div class="video-category" name="<%=cate.name%>">
+	<div class="titlebar">
+		<div class="slide-triggers">
+			<div id="<%=cate.name%>LeftTrigger" class="slide-trigger slide-left-trigger" cmd="gotoPage" param="-1" name="<%=cate.name%>"></div>
+			<div id="<%=cate.name%>RightTrigger" class="slide-trigger slide-right-trigger" cmd="gotoPage" param="1" name="<%=cate.name%>"></div>
+		</div>
+		<div class="title"><%=cate.title%></div>
+	</div>
+	<div id="<%=cate.name%>ListWrapper" class="video-list-wrapper">
+	</div>
+</div>
+<% } %>
+</script>
+<script id="categoryVideoListTmpl" type="text/template">
+<ul id="<%=name %>List" class="video-list clearfix" style="width: <%=listWidth %>px;">
+	<% for(var i = 0, info; (info = list[i]) && i < total; i++) {  %>
+	<li class="video-item" param="<%=info.vid%>__<%=info.episode || ''%>_<%=info.provider%>" action="toggleDetail" >
+		<div class="img-wrapper video-box-shadow" cmd="play" param="<%=info.vid%>__<%=info.episode || ''%>_<%=info.provider%>" report="<%=report%>_<%=info.vid%>">
+			<img src="<%=poster(info.svid) %>" onerror="this.onerror=null;this.src='<%=defaultPoster%>'">
+		</div>
+		<div class="video-item-mask"></div>
+		<div class="text-wrapper">
+			<div class="title text-ellipsis" cmd="play" param="<%=info.vid%>__<%=info.episode || ''%>_<%=info.provider%>" report="<%=report%>_<%=info.vid%>"><%=encodeHTML(info.name) %></div>
+			<div class="text text-ellipsis" title="<%=encodeAttr(info.point || '') %>"><%=encodeHTML(info.point || '') %></div>
+		</div>
+	</li>
+	<% } %>
+</ul>
+</script>
+<script id="randomVideoTmpl" type="text/template">
+<div class="img-wrapper video-box-shadow" cmd="play" param="<%=info.vid%>__<%=info.episode || ''%>_<%=info.provider%>" report="10350_<%=info.vid%>">
+    <img class="video-img" src="<%=info.img || poster(info.svid) %>" onerror="this.onerror=null;this.src='<%=defaultPoster%>'">
+    <div class="video-border-mask"></div>
+</div>
+<div class="text-wrapper">
+	<div class="title text-ellipsis"><%=encodeHTML(info.name) %></div>
+	<div class="text text-ellipsis" title="<%=encodeAttr(info.point || '') %>"><%=encodeHTML(info.point || '') %></div>
+</div>
+<div class="random-item-mask"></div>
+<div class="play-icon" cmd="play" param="<%=info.vid%>__<%=info.episode || ''%>_<%=info.provider%>" report="10350_<%=info.vid%>"></div>
+</script>
+<script src="http://qplus1.idqqimg.com/module/mediacenter/js/jx.all.js?%TimeStamp%"></script>
+<script src="http://qplus1.idqqimg.com/module/mediacenter/js/common.all.js?%TimeStamp%"></script>
+<script src="http://qplus1.idqqimg.com/module/mediacenter/js/main.all.js?%TimeStamp%"></script>
+<script type="text/javascript">
+    PAGE_END = +new Date;
+</script>
