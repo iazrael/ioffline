@@ -3,7 +3,6 @@ var fs = require('fs'),
 
 var readConfig = function(configFile){
 	var content = fs.readFileSync(configFile).toString();
-    content = content.replace(/\/\*[\s\S]*?\*\/|\/\/.+/g, '')
     var config = JSON.parse(content);
     return config;
 }
@@ -11,17 +10,38 @@ var readConfig = function(configFile){
 var pickupJs = function(url){
 	var content = fs.readFileSync(url).toString();
 	var reg = /<script\s+.*?src="?([^"]+)"?[^>]+>/gi;
-	var match = content.match(reg);
-	console.log(match);
-	return [];
+	var jss = [];
+	content.replace(reg, function(m, u1){
+		jss.push(u1);
+	});
+	// console.log(jss);
+	return jss;
 }
 
 var pickupCss = function(url){
-	return [];
+	var content = fs.readFileSync(url).toString();
+	var reg = /<link\s+.*?href="?([^"]+)"?[^>]+>/gi;
+	var attReg = /rel="?\bstylesheet\b"?/i;
+	var csss = [];
+	content.replace(reg, function(m, u1){
+		if(attReg.test(m)){
+			csss.push(u1);
+		}
+	});
+	console.log(csss);
+	return csss;
 }
 
 var pickupImg = function(url){
-	return [];
+	console.log(url);
+	var content = fs.readFileSync(url).toString();
+	var reg = /url\("?([^")]+)"\)/gi;
+	var imgs = [];
+	content.replace(reg, function(m, u1){
+			imgs.push(u1);
+	});
+	console.log(imgs);
+	return imgs;
 }
 
 var writeManifest = function(name, list){
@@ -50,7 +70,7 @@ exports.generate = function(configFile){
 			list.splice(list.length, 0, csss);
 			// 收集 css 里面的图片
 			for(var j = 0, css; css = csss[j]; j++) {
-				imgs = pickupImg(css);
+				imgs = pickupImg(css.replace(config.linkPrefix, ''));
 				list.splice(list.length, 0, imgs);
 			}
 		}

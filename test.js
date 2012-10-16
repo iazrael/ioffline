@@ -1,0 +1,1 @@
+require('./ioffline').generate('./config.json');
