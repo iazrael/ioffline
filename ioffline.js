@@ -4,6 +4,7 @@ var fs = require('fs'),
 var readConfig = function(configFile){
 	var content = fs.readFileSync(configFile).toString();
     var config = JSON.parse(content);
+    //TODO 参数兼容
     return config;
 }
 
@@ -18,8 +19,11 @@ var pickupJs = function(url){
 	return jss;
 }
 
-var pickupCss = function(url){
+var pickupCss = function(url, manifest){
 	var content = fs.readFileSync(url).toString();
+	var attr = 'manifest="' + manifest + '">'
+	content.replace(/(<html)([^>]*>)/i, '$1' + attr + '$2');
+	fs.writeFileSync(url, content);
 	var reg = /<link\s+.*?href="?([^"]+)"?[^>]+>/gi;
 	var attReg = /rel="?\bstylesheet\b"?/i;
 	var csss = [];
@@ -44,8 +48,20 @@ var pickupImg = function(url){
 	return imgs;
 }
 
-var writeManifest = function(name, list){
-
+var writeManifest = function(name, list, config){
+	//write cache
+	var record = [];
+	record.push('CACHE MANIFEST');
+	record.push('CACHE:');
+	record = record.concat(list);
+	//write network
+	record.push('NETWORK:');
+	record = record.concat(config.network);
+	//write fallback
+	record.push('FALLBACK:');
+	record = record.concat(config.fallback);
+	var content = record.join('\n');
+	fs.writeFileSync(name, content);
 }
 
 /**
@@ -55,10 +71,12 @@ var writeManifest = function(name, list){
 exports.generate = function(configFile){
 	// 读取配置
 	var config = readConfig(configFile);
-	var htmls, csss, jss, imgs, list;
-	for(var name in config){
+	var cacheList = config.cache;
+	var htmls, csss, jss, imgs, list, manifest;
+	for(var name in cacheList){
 		list = [];
-		htmls = config[name];
+		htmls = cacheList[name];
+		manifest = name + '.' + config.manifestSuffix;
 		for(var i = 0, html; html = htmls[i]; i++) {
 			// 收集 html
 			list.push(html);
@@ -66,7 +84,7 @@ exports.generate = function(configFile){
 			jss = pickupJs(html);
 			list.splice(list.length, 0, jss);
 			// 收集 css
-			csss = pickupCss(html);
+			csss = pickupCss(html, manifest);
 			list.splice(list.length, 0, csss);
 			// 收集 css 里面的图片
 			for(var j = 0, css; css = csss[j]; j++) {
@@ -75,6 +93,6 @@ exports.generate = function(configFile){
 			}
 		}
 		//创建 manifest 
-		writeManifest(name, list);
+		writeManifest(manifest, list, config);
 	}
 }

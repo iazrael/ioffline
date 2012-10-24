@@ -1,0 +1,16 @@
+{
+	"linkPrefix": "http://qplus1.idqqimg.com/module/mediacenter/",
+	"manifestSuffix": "manifest",
+	"cache": {
+		"offline": [
+			"index.html"
+		]
+	},
+	"network": [
+		"*"
+	],
+	"fallback": [
+		"/ fallback.html"
+	]
+	
+}
