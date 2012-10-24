@@ -1,0 +1,14 @@
+CACHE MANIFEST
+CACHE:
+index.html
+http://cdn.qplus.com/js/qplus.api.js
+http://qplus1.idqqimg.com/module/mediacenter/js/jx.all.js?%TimeStamp%
+http://qplus1.idqqimg.com/module/mediacenter/js/common.all.js?%TimeStamp%
+http://qplus1.idqqimg.com/module/mediacenter/js/index.all.js?%TimeStamp%
+http://qplus1.idqqimg.com/module/mediacenter/style/scrollstyle_black.css?%TimeStamp%
+http://qplus1.idqqimg.com/module/mediacenter/style/common.css?%TimeStamp%
+http://qplus1.idqqimg.com/module/mediacenter/style/index.css?%TimeStamp%
+NETWORK:
+*
+FALLBACK:
+/ fallback.html
