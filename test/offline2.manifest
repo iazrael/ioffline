@@ -1,15 +1,11 @@
 CACHE MANIFEST
 CACHE:
-index.html
-http://cdn.qplus.com/js/qplus.api.js
+main.html
 http://qplus1.idqqimg.com/module/mediacenter/js/jx.all.js?%TimeStamp%
 http://qplus1.idqqimg.com/module/mediacenter/js/common.all.js?%TimeStamp%
-http://qplus1.idqqimg.com/module/mediacenter/js/index.all.js?%TimeStamp%
+http://qplus1.idqqimg.com/module/mediacenter/js/main.all.js?%TimeStamp%
 http://qplus1.idqqimg.com/module/mediacenter/style/scrollstyle_black.css?%TimeStamp%
 http://qplus1.idqqimg.com/module/mediacenter/style/common.css?%TimeStamp%
-http://qplus1.idqqimg.com/module/mediacenter/style/index.css?%TimeStamp%
-main.html
-http://qplus1.idqqimg.com/module/mediacenter/js/main.all.js?%TimeStamp%
 http://qplus1.idqqimg.com/module/mediacenter/style/main.css?%TimeStamp%
 NETWORK:
 *

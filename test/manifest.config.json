@@ -3,7 +3,11 @@
 	"manifestSuffix": "manifest",
 	"cache": {
 		"offline": [
-			"index.html"
+			"index.html",
+			"main.html"
+		],
+		"offline2": [
+			"main.html"
 		]
 	},
 	"network": [

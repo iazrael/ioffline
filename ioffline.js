@@ -21,9 +21,9 @@ var pickupJs = function(url){
 
 var pickupCss = function(url, manifest){
 	var content = fs.readFileSync(url).toString();
-	var maniReg = /<html.+manifest="?([^"]*)"?[^>]*>/i;
+	var maniReg = /(<html.+manifest="?)[^"]*("?[^>]*>)/i;
 	if(maniReg.test(content)){
-		// content = content.replace(maniReg, '$1');
+		content = content.replace(maniReg, '$1' + manifest + '$2');
 	}else{
 		var attr = ' manifest="' + manifest + '" '
 		content = content.replace(/(<html)([^>]*>)/i, '$1' + attr + '$2');
@@ -37,7 +37,7 @@ var pickupCss = function(url, manifest){
 			csss.push(u1);
 		}
 	});
-	console.log(csss);
+	// console.log(csss);
 	return csss;
 }
 
@@ -69,6 +69,18 @@ var writeManifest = function(name, list, config){
 	var content = record.join('\n');
 	fs.writeFileSync(name, content);
 }
+/**
+ * 合并数组，排除掉重复的
+ * @param  {Array} origin 
+ * @param  {Array} list   
+ */
+var mergeArray = function(origin, list){
+	for(var i = 0, item; item = list[i]; i++) {
+	    if(origin.indexOf(item) === -1){
+	    	origin.push(item);
+	    }
+	}
+}
 
 /**
  * 入口函数
@@ -88,15 +100,15 @@ exports.generate = function(configFile){
 			list.push(html);
 			// 收集 js
 			jss = pickupJs(html);
-			list = list.concat(jss);
+			mergeArray(list, jss);
 			// 收集 css
 			csss = pickupCss(html, manifest);
-			list = list.concat(csss);
+			mergeArray(list, csss);
 			// 收集 css 里面的图片
-			for(var j = 0, css; css = csss[j]; j++) {
-				imgs = pickupImg(css.replace(config.linkPrefix, ''));
-				list = list.concat(imgs);
-			}
+			// for(var j = 0, css; css = csss[j]; j++) {
+			// 	imgs = pickupImg(css.replace(config.linkPrefix, ''));
+			//	mergeArray(list, imgs);
+			// }
 		}
 		//创建 manifest 
 		writeManifest(manifest, list, config);
