@@ -2,7 +2,7 @@
   "author": "azrael <azrael@imatlas.com> (http://imatlas.com/about)",
   "name": "ioffline",
   "description": "generate the manifest file automatically",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "homepage": "",
   "repository": {
     "type": "git",

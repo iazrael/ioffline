@@ -3,7 +3,7 @@
 	//就要设置下面这个属性
 	"linkPrefix": "http://cdn.xxx.com/",//optional
 	"manifestSuffix": "manifest", // optional
-	"outputRoot": "./output/", //optional 默认在当前目录输出 "./"
+	"outputRoot": "./output/", //optional 默认在当前目录输出 "./", 建议填入
 	"cache": { //required 必须
 		"offline": [//offline 是 输出的manifest的名字,跟 manifestSuffix 组合成文件名
 			"index.html"

@@ -85,6 +85,8 @@ var writeManifest = function(name, list, config){
 	//write fallback
 	record.push('FALLBACK:');
 	record = record.concat(config.fallback);
+	//write timestamp
+	record.push('#generate @ ' + +new Date);
 	var content = record.join('\n');
 	var filename = path.join(config.outputRoot, name);
 	nf.writeFileSync(filename, content);
