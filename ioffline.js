@@ -1,10 +1,26 @@
 var fs = require('fs'),
+	path = require('path');
+
+var nf = require('node-file'),
 	ztool = require('./ztool');
 
-var readConfig = function(configFile){
-	var content = fs.readFileSync(configFile).toString();
-    var config = JSON.parse(content);
-    //TODO 参数兼容
+var defaultConfig = {
+	'linkPrefix': '',
+	'manifestSuffix': 'manifest',
+	'outputRoot': './',
+	'cache': [],
+	'network': [
+		'*'
+	],
+	'fallback': [ ]
+};
+
+var readConfig = function(config){
+	if(ztool.isString(config)){
+		var content = fs.readFileSync(config).toString();
+    	config = ztool.jsonParse(content);
+	}
+	config = ztool.merge({}, defaultConfig, config);
     return config;
 }
 
@@ -19,7 +35,7 @@ var pickupJs = function(url){
 	return jss;
 }
 
-var pickupCss = function(url, manifest){
+var pickupCss = function(url, manifest, config){
 	var content = fs.readFileSync(url).toString();
 	var maniReg = /(<html.+manifest="?)[^"]*("?[^>]*>)/i;
 	if(maniReg.test(content)){
@@ -28,7 +44,8 @@ var pickupCss = function(url, manifest){
 		var attr = ' manifest="' + manifest + '" '
 		content = content.replace(/(<html)([^>]*>)/i, '$1' + attr + '$2');
 	}
-	fs.writeFileSync(url, content);
+	var filename = path.join(config.outputRoot, url);
+	nf.writeFileSync(filename, content);
 	var reg = /<link\s+.*?href="?([^"]+)"?[^>]+>/gi;
 	var attReg = /rel="?\bstylesheet\b"?/i;
 	var csss = [];
@@ -43,14 +60,15 @@ var pickupCss = function(url, manifest){
 
 var pickupImg = function(url){
 	url = url.split('?')[0];
-	console.log(url);
+	// console.log(url);
+	var styleRoot = path.dirname(url);
 	var content = fs.readFileSync(url).toString();
 	var reg = /url\("?([^")]+)"\)/gi;
 	var imgs = [];
 	content.replace(reg, function(m, u1){
-			imgs.push(u1);
+			imgs.push(path.join(styleRoot, u1));
 	});
-	console.log(imgs);
+	// console.log(imgs);
 	return imgs;
 }
 
@@ -67,7 +85,8 @@ var writeManifest = function(name, list, config){
 	record.push('FALLBACK:');
 	record = record.concat(config.fallback);
 	var content = record.join('\n');
-	fs.writeFileSync(name, content);
+	var filename = path.join(config.outputRoot, name);
+	nf.writeFileSync(filename, content);
 }
 /**
  * 合并数组，排除掉重复的
@@ -102,13 +121,14 @@ exports.generate = function(configFile){
 			jss = pickupJs(html);
 			mergeArray(list, jss);
 			// 收集 css
-			csss = pickupCss(html, manifest);
+			csss = pickupCss(html, manifest, config);
 			mergeArray(list, csss);
 			// 收集 css 里面的图片
-			// for(var j = 0, css; css = csss[j]; j++) {
-			// 	imgs = pickupImg(css.replace(config.linkPrefix, ''));
-			//	mergeArray(list, imgs);
-			// }
+			for(var j = 0, css; css = csss[j]; j++) {
+				css = config.linkPrefix ? css.replace(config.linkPrefix, '') : css;
+				imgs = pickupImg(css);
+				mergeArray(list, imgs);
+			}
 		}
 		//创建 manifest 
 		writeManifest(manifest, list, config);

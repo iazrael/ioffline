@@ -1,4 +1,38 @@
-ioffline
-========
+自动帮你生成 manifest
 
-generate the manifest file automatically
+配置说明
+
+	{
+		//css 文件中, 如果图片url是写了绝对路径, 也就是说 html 跟 css 或 图片不在一个域名下
+		//就要设置下面这个属性
+		"linkPrefix": "http://cdn.xxx.com/",//optional
+		"manifestSuffix": "manifest", // optional
+		"outputRoot": "./output/", //optional 默认在当前目录输出 "./", 建议填入
+		"cache": { //required 必须
+			"offline": [//offline 是 输出的manifest的名字,跟 manifestSuffix 组合成文件名
+				"index.html"
+			],
+			"offline2": [
+				"index.html",
+				"main.html"
+			]
+		},
+		"network": [  "*"  ],//optional
+		"fallback": [ // optional
+			"/ fallback.html"
+		]
+	}
+
+最简配置
+
+	{
+		"cache": { 
+			"offline": [
+				"index.html"
+			],
+			"offline2": [
+				"index.html",
+				"main.html"
+			]
+		}
+	}

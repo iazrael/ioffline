@@ -1,0 +1,20 @@
+{
+  "author": "azrael <azrael@imatlas.com> (http://imatlas.com/about)",
+  "name": "ioffline",
+  "description": "generate the manifest file automatically",
+  "version": "0.1.2",
+  "homepage": "",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:iazrael/ioffline.git"
+  },
+  "main": "./ioffline.js",
+  "engines": {
+    "node": "*"
+  },
+  "dependencies": {
+    "node-file": "*"
+  },
+  "devDependencies": {},
+  "optionalDependencies": {}
+}

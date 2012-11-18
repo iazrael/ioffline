@@ -1,73 +1,74 @@
 var fs = require('fs'),
     path = require('path');
 
+var toString = Object.prototype.toString;
 
-/**
- * 创建多级目录
- * @param  {String} dirpath 路径
- * @param  {String} mode    文件模式
- */
-var mkdirsSync = exports.mkdirsSync = function(dirpath, mode) {
-    if(fs.existsSync(dirpath)){
-        return;
-    }
-    var dirs = dirpath.split('/');
-    var dir = '';
-    for(var i = 0; i < dirs.length; i++) {
-        dir += dirs[i] + '/';
-        if(!fs.existsSync(dir)){
-            fs.mkdirSync(dir, mode);
-        }
-    }
-};
+var is = exports.is = function(type, obj) {
+    var clas = toString.call(obj).slice(8, -1);
+    return obj !== undefined && obj !== null && clas === type;
+}
 
-/**
- * 批量读取文件
- * @param  {String} dir      路径
- * @param  {String} fileType 需要读取的文件的格式
- * @return {Array}  返回文件的内容数组 [{fileName: '', content: buffer}]
- */
-exports.readFilesSync = function(dir, fileType){
-    var list,
-        result = [],
-        fileName,
-        ext,
-        stat;
-    if(dir.lastIndexOf('/') !== dir.length - 1){
-        dir += '/';
-    }
-    list = fs.readdirSync(dir);
-    if(fileType && fileType.indexOf('.') === -1){
-        fileType = '.' + fileType.toLowerCase();
-    }
-    for(var i = 0, name; name = list[i]; i++) {
-        ext = path.extname(name);
-        if(fileType && ext.toLowerCase() !== fileType){
-            continue;
-        }
-        fileName = dir + name;
-        stat = fs.statSync(fileName);
-        if(!stat.isFile()){
-            continue;
-        }
-        result.push({
-            fileName: name,
-            content: fs.readFileSync(fileName)
-        });
-    };
-    return result;
+var isString = exports.isString = function(obj){
+    return toString.call(obj) === '[object String]';
+}
+
+var isArray = exports.isArray = Array.isArray || function(obj){
+    return toString.call(obj) === '[object Array]';
+}
+
+var isArguments = exports.isArguments = function(obj){
+    return toString.call(obj) === '[object Arguments]';
+}
+
+var isObject = exports.isObject = function(obj){
+    return toString.call(obj) === '[object Object]';
+}
+
+var isFunction = exports.isFunction = function(obj){
+    return toString.call(obj) === '[object Function]';
+}
+
+var isUndefined = exports.isUndefined = function(obj){
+    return toString.call(obj) === '[object Undefined]';
 }
 
 /**
- * 写文件, 自动创建不存在的目录
- * @param  {[type]} fileName [description]
- * @param  {[type]} data     [description]
- * @return {[type]}          [description]
- */
-exports.writeFileSync = function(fileName, data){
-    var dir = path.dirname(fileName);
-    mkdirsSync(dir);
-    fs.writeFileSync(fileName, data);
+ * 合并几个对象并返回 baseObj,
+ * 如果 extendObj 有数组属性, 则直接拷贝引用
+ * @param {Object} baseObj 基础对象
+ * @param {Object} extendObj ... 
+ * 
+ * @return {Object} baseObj
+ * 
+ **/
+var merge = exports.merge = function(baseObj, extendObj1, extendObj2/*, extnedObj3...*/){
+    var argu = arguments;
+    var extendObj;
+    for(var i = 1; i < argu.length; i++){
+        extendObj = argu[i];
+        for(var j in extendObj){
+            if(isArray(extendObj[j])){
+                baseObj[j] = extendObj[j].concat();
+            }else if(isObject(extendObj[j])){
+                if(baseObj[j] && isArray(baseObj[j])){
+                //避免给数组做 merge
+                    baseObj[j] = merge({}, extendObj[j]);
+                }else{
+                    baseObj[j] = merge({}, baseObj[j], extendObj[j]);
+                }
+            }else{
+                baseObj[j] = extendObj[j];
+            }
+        }
+    }
+    return baseObj;
 }
 
+exports.endsWith = function(str, end){
+    var index = str.lastIndexOf(end);
+    return index + end.length == str.length;
+}
 
+exports.jsonParse = function(jsonStr){
+    return Function('return ' + jsonStr)();
+}
