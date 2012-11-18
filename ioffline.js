@@ -58,11 +58,12 @@ var pickupCss = function(url, manifest, config){
 	return csss;
 }
 
-var pickupImg = function(url){
+var pickupImg = function(url, config){
 	url = url.split('?')[0];
+	url = config.linkPrefix ? url.replace(config.linkPrefix, '') : url;
 	// console.log(url);
-	var styleRoot = path.dirname(url);
 	var content = fs.readFileSync(url).toString();
+	var styleRoot = path.join(config.linkPrefix, path.dirname(url));
 	var reg = /url\("?([^")]+)"\)/gi;
 	var imgs = [];
 	content.replace(reg, function(m, u1){
@@ -125,8 +126,8 @@ exports.generate = function(configFile){
 			mergeArray(list, csss);
 			// 收集 css 里面的图片
 			for(var j = 0, css; css = csss[j]; j++) {
-				css = config.linkPrefix ? css.replace(config.linkPrefix, '') : css;
-				imgs = pickupImg(css);
+				
+				imgs = pickupImg(css, config);
 				mergeArray(list, imgs);
 			}
 		}
