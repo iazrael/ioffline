@@ -1,0 +1,14 @@
+{
+	// "linkPrefix": "http://cdn.xxx.com/",
+	// "manifestSuffix": "manifest",
+	"outputRoot": "./output/",
+	"cache": {
+		"offline": [
+			"index.html"
+		]	
+	},
+	// "network": [  "*"  ],
+	// "fallback": [
+	// 	"/ fallback.html"
+	// ]
+}

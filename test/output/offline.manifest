@@ -1,0 +1,17 @@
+CACHE MANIFEST
+CACHE:
+index.html
+js/jx/jx.all.js?123456
+js/game/game.js
+js/ga.js
+style/bootstrap/css/bootstrap.css
+style/main.css?654321
+style/bootstrap/img/glyphicons-halflings.png
+style/bootstrap/img/glyphicons-halflings-white.png
+style/site/bg2.png?t=123456
+style/battlefield/bg_grid.png
+style/battlefield/bg6.jpg?t=654321
+NETWORK:
+*
+FALLBACK:
+#generate @ 1353593391232

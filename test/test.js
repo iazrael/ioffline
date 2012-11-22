@@ -1,0 +1,1 @@
+require('../ioffline').generate('./manifest.config.json');
