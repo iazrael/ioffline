@@ -64,7 +64,7 @@ var pickupImg = function(url, config){
 	// console.log(url);
 	var content = fs.readFileSync(url).toString();
 	var styleRoot = path.join(config.linkPrefix, path.dirname(url));
-	var reg = /url\("?([^")]+)"\)/gi;
+	var reg = /url\(["']?([^"')]+)["']?\)/gi;
 	var imgs = [];
 	content.replace(reg, function(m, u1){
 			imgs.push(path.join(styleRoot, u1));
